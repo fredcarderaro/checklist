@@ -57,7 +57,6 @@ function App() {
 
   const toggleDialog = () => {
     setShowDialog(!showDialog);
-    console.log("ola, mundo");
   };
 
   return (
@@ -84,7 +83,7 @@ function App() {
           </ToDoList>
           <Footer>
             {/* Dialog */}
-            <Dialog isOpen={showDialog} />
+            <Dialog isOpen={showDialog} onClose={toggleDialog} />
             <FabButton onClick={toggleDialog}>
               <IconPlus />
             </FabButton>
