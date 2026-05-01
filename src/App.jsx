@@ -10,6 +10,7 @@ import { IconPlus, IconSchool } from "./components/icons";
 import { SubHeading } from "./components/SubHeading";
 import { ToDoItem } from "./components/ToDoItem";
 import { ToDoList } from "./components/ToDoList";
+import { TodoForm } from "./components/TodoForm";
 
 const todos = [
   {
@@ -59,6 +60,11 @@ function App() {
     setShowDialog(!showDialog);
   };
 
+  const addTodo = () => {
+    console.log("form submetido");
+    toggleDialog();
+  };
+
   return (
     <main>
       <Container>
@@ -83,7 +89,9 @@ function App() {
           </ToDoList>
           <Footer>
             {/* Dialog */}
-            <Dialog isOpen={showDialog} onClose={toggleDialog} />
+            <Dialog isOpen={showDialog} onClose={toggleDialog}>
+              <TodoForm onSubmit={addTodo} />
+            </Dialog>
             <FabButton onClick={toggleDialog}>
               <IconPlus />
             </FabButton>

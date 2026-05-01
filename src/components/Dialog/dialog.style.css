@@ -1,10 +1,25 @@
 ::backdrop {
-  background-image: linear-gradient(
-    45deg,
-    magenta,
-    rebeccapurple,
-    dodgerblue,
-    green
-  );
+  background-color: #504d4d;
   opacity: 0.75;
+}
+
+.dialog {
+  background-color: #1e1e1e;
+  border-radius: 16px;
+  border: none;
+  padding: 8px 16px;
+
+  .body {
+    padding: 10px 0;
+  }
+
+  .btn-close-wrapper {
+    text-align: right;
+
+    .btn-close {
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+    }
+  }
 }
