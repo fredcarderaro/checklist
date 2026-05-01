@@ -1,10 +1,16 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import "./dialog.style.css";
 
-export function Dialog() {
+export function Dialog({ isOpen, onClose }) {
+  // não devemos fazer buscas no DOM dessa forma
+  //const dialog = document.querySelector("dialog");
+
   const dialogRef = useRef(null);
 
-  //const dialog = document.querySelector("dialog");
+  useEffect(() => {
+    console.log(`Alternar modal: ${isOpen}`);
+    isOpen ? openDialog() : closeDialog();
+  }, [isOpen]);
 
   // "Show the dialog" button opens the dialog modally
   const openDialog = () => {
@@ -19,12 +25,11 @@ export function Dialog() {
   return (
     <>
       <dialog ref={dialogRef}>
-        <button autoFocus onClick={closeDialog}>
+        <button autoFocus onClick={onClose}>
           Close
         </button>
         <p>This modal dialog has groovy backdrop!</p>
       </dialog>
-      <button onClick={openDialog}>Show the dialog</button>
     </>
   );
 }
