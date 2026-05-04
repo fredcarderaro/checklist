@@ -65,9 +65,9 @@ function App() {
   const { todos, addTodo } = use(TodoContext);
 
   // Exibir ou ocultar modal Dialog
-  const toggleDialog = () => {
+  function toggleDialog() {
     setShowDialog(!showDialog);
-  };
+  }
 
   const handleFormSubmit = (formData) => {
     addTodo(formData);
