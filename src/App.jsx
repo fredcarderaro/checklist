@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { use, useState } from "react";
 import { ChecklistsWrapper } from "./components/ChecklistsWrapper";
 import { Container } from "./components/Container";
 import { Dialog } from "./components/Dialog";
@@ -11,6 +11,8 @@ import { SubHeading } from "./components/SubHeading";
 import { ToDoItem } from "./components/ToDoItem";
 import { ToDoList } from "./components/ToDoList";
 import { TodoForm } from "./components/TodoForm";
+import TodoContext from "./components/TodoProvider/TodoContext";
+import { TodoGroup } from "./components/TodoGroup";
 
 /* const todos = [
   {
@@ -59,74 +61,17 @@ function App() {
   // Cria estado de controle de exibição do modal Dialog
   const [showDialog, setShowDialog] = useState(false);
 
-  // Cria estado com lista de todos inicial
-  const [todos, setTodos] = useState([
-    {
-      id: 1,
-      description: "JSX e componentes",
-      completed: false,
-      createdAt: "2022-10-31",
-    },
-    {
-      id: 2,
-      description: "Props, state e hooks",
-      completed: true,
-      createdAt: "2022-10-31",
-    },
-    {
-      id: 3,
-      description: "Ciclo de vida dos componentes",
-      completed: false,
-      createdAt: "2022-10-31",
-    },
-  ]);
+  // Importa o TodoContext
+  const { todos, addTodo } = use(TodoContext);
 
   // Exibir ou ocultar modal Dialog
   const toggleDialog = () => {
     setShowDialog(!showDialog);
   };
 
-  // Adicionar todo à lista
-  const addTodo = (formData) => {
-    const description = formData.get("description");
-
-    setTodos((prevState) => {
-      const todo = {
-        id: prevState.length + 1,
-        description,
-        completed: false,
-        createdAt: new Date().toISOString(),
-      };
-
-      return [...prevState, todo];
-    });
-
+  const handleFormSubmit = (formData) => {
+    addTodo(formData);
     toggleDialog();
-  };
-
-  // Funcao executa o toggle no item todo completed
-  const toggleTodoCompleted = (todo) => {
-    setTodos((prevState) => {
-      return prevState.map((item) => {
-        if (item.id == todo.id) {
-          return {
-            ...item,
-            completed: !item.completed,
-          };
-        }
-
-        return item;
-      });
-    });
-  };
-
-  // Funcao exclui item todo
-  const deleteTodo = (todo) => {
-    setTodos((prevState) => {
-      return prevState.filter((item) => {
-        return item.id != todo.id;
-      });
-    });
   };
 
   return (
@@ -139,40 +84,20 @@ function App() {
         </Header>
 
         <ChecklistsWrapper>
-          <SubHeading>Para estudar</SubHeading>
-          <ToDoList>
-            {todos
-              .filter((task) => !task.completed)
-              .map(function (task) {
-                return (
-                  <ToDoItem
-                    key={task.id}
-                    item={task}
-                    onToggleCompleted={toggleTodoCompleted}
-                    onDeleteTodo={deleteTodo}
-                  />
-                );
-              })}
-          </ToDoList>
-          <SubHeading>Concluído</SubHeading>
-          <ToDoList>
-            {todos
-              .filter((task) => task.completed)
-              .map(function (task) {
-                return (
-                  <ToDoItem
-                    key={task.id}
-                    item={task}
-                    onToggleCompleted={toggleTodoCompleted}
-                    onDeleteTodo={deleteTodo}
-                  />
-                );
-              })}
-          </ToDoList>
+          <TodoGroup
+            heading="Para estudar"
+            items={todos.filter((t) => !t.completed)}
+          />
+
+          <TodoGroup
+            heading="Concluído"
+            items={todos.filter((t) => t.completed)}
+          />
+
           <Footer>
             {/* Dialog */}
             <Dialog isOpen={showDialog} onClose={toggleDialog}>
-              <TodoForm onSubmit={addTodo} />
+              <TodoForm onSubmit={handleFormSubmit} />
             </Dialog>
             <FabButton onClick={toggleDialog}>
               <IconPlus />
