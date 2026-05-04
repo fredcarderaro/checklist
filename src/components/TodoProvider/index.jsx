@@ -1,28 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TodoContext from "./TodoContext";
 
+const TODOS = "todos";
+
 export function TodoProvider({ children }) {
+  // Read do localstorage
+  const savedTodos = localStorage.getItem(TODOS);
+
   // Cria estado com lista de todos inicial
-  const [todos, setTodos] = useState([
-    {
-      id: 1,
-      description: "JSX e componentes",
-      completed: false,
-      createdAt: "2022-10-31",
-    },
-    {
-      id: 2,
-      description: "Props, state e hooks",
-      completed: true,
-      createdAt: "2022-10-31",
-    },
-    {
-      id: 3,
-      description: "Ciclo de vida dos componentes",
-      completed: false,
-      createdAt: "2022-10-31",
-    },
-  ]);
+  const [todos, setTodos] = useState(savedTodos ? JSON.parse(savedTodos) : []);
+
+  // UseEffect executa função sempre que o Array de Todos é alterado
+  useEffect(() => {
+    localStorage.setItem(TODOS, JSON.stringify(todos));
+  }, [todos]);
 
   // Adicionar todo à lista
   const addTodo = (formData) => {
