@@ -42,18 +42,34 @@ export function TodoProvider({ children }) {
 
     setTodos((prevState) => {
       const todo = {
-        id: selectedTodo ? selectedTodo.id : prevState.length + 1,
+        id: prevState.length + 1,
         description,
-        completed: selectedTodo ? selectedTodo.completed : false,
-        createdAt: selectedTodo ? selectedTodo.createdAt : Date().toISOString(),
+        completed: false,
+        createdAt: new Date().toISOString(),
       };
 
-      return [...prevState.filter((item) => item.id != todo.id), todo].sort(
-        (a, b) => a.id - b.id,
-      );
+      return [...prevState, todo];
     });
 
     closeFormTodoDialog();
+  };
+
+  // Edita todo selecionado da Lista
+  const editTodo = (formData) => {
+    setTodos((prevState) => {
+      return prevState.map((item) => {
+        if (item.id === selectedTodo.id) {
+          return {
+            ...item,
+            description: formData.get("description"),
+          };
+        } else {
+          return item;
+        }
+      });
+    });
+
+    setSelectedTodo(null);
   };
 
   // Funcao executa o toggle no item todo completed
@@ -86,6 +102,7 @@ export function TodoProvider({ children }) {
       value={{
         todos,
         addTodo,
+        editTodo,
         deleteTodo,
         toggleTodoCompleted,
         showDialog,

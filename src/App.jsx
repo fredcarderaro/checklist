@@ -13,6 +13,7 @@ import { TodoForm } from "./components/TodoForm";
 import TodoContext from "./components/TodoProvider/TodoContext";
 import { TodoGroup } from "./components/TodoGroup";
 import { use } from "react";
+import { EmptyState } from "./components/EmptyState";
 
 /* const todos = [
   {
@@ -62,6 +63,7 @@ function App() {
   const {
     todos,
     addTodo,
+    editTodo,
     showDialog,
     openFormTodoDialog,
     closeFormTodoDialog,
@@ -69,7 +71,12 @@ function App() {
   } = use(TodoContext);
 
   const handleFormSubmit = (formData) => {
-    addTodo(formData);
+    if (selectedTodo) {
+      editTodo(formData);
+    } else {
+      addTodo(formData);
+    }
+
     closeFormTodoDialog();
   };
 
@@ -88,6 +95,9 @@ function App() {
             items={todos.filter((t) => !t.completed)}
           />
 
+          {/* Condição ternária, se todo for vazioo adiciona o componente EmptyState */}
+          {todos.length == 0 && <EmptyState />}
+
           <TodoGroup
             heading="Concluído"
             items={todos.filter((t) => t.completed)}
@@ -101,7 +111,7 @@ function App() {
                 defaultValue={selectedTodo?.description}
               />
             </Dialog>
-            <FabButton onClick={openFormTodoDialog}>
+            <FabButton onClick={() => openFormTodoDialog()}>
               <IconPlus />
             </FabButton>
           </Footer>
