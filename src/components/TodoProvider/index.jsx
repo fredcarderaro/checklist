@@ -10,6 +10,27 @@ export function TodoProvider({ children }) {
   // Cria estado com lista de todos inicial
   const [todos, setTodos] = useState(savedTodos ? JSON.parse(savedTodos) : []);
 
+  // Cria estado de controle de exibição do modal Dialog
+  const [showDialog, setShowDialog] = useState(false);
+
+  // Cria estado para carregar todo a ser editado
+  const [selectedTodo, setSelectedTodo] = useState();
+
+  // Função de abertura e edição de item
+  const openFormTodoDialog = (todo) => {
+    if (todo) {
+      setSelectedTodo(todo);
+    }
+
+    setShowDialog(true);
+  };
+
+  // Ocultar modal Dialog
+  const closeFormTodoDialog = () => {
+    setShowDialog(false);
+    setShowDialog(null);
+  };
+
   // UseEffect executa função sempre que o Array de Todos é alterado
   useEffect(() => {
     localStorage.setItem(TODOS, JSON.stringify(todos));
@@ -30,7 +51,25 @@ export function TodoProvider({ children }) {
       return [...prevState, todo];
     });
 
-    // toggleDialog();
+    closeFormTodoDialog();
+  };
+
+  // Edita todo selecionado da Lista
+  const editTodo = (formData) => {
+    setTodos((prevState) => {
+      return prevState.map((item) => {
+        if (item.id === selectedTodo.id) {
+          return {
+            ...item,
+            description: formData.get("description"),
+          };
+        } else {
+          return item;
+        }
+      });
+    });
+
+    setSelectedTodo(null);
   };
 
   // Funcao executa o toggle no item todo completed
@@ -59,7 +98,19 @@ export function TodoProvider({ children }) {
   };
 
   return (
-    <TodoContext value={{ todos, addTodo, toggleTodoCompleted, deleteTodo }}>
+    <TodoContext
+      value={{
+        todos,
+        addTodo,
+        editTodo,
+        deleteTodo,
+        toggleTodoCompleted,
+        showDialog,
+        openFormTodoDialog,
+        closeFormTodoDialog,
+        selectedTodo,
+      }}
+    >
       {children}
     </TodoContext>
   );

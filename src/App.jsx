@@ -1,4 +1,3 @@
-import { use, useState } from "react";
 import { ChecklistsWrapper } from "./components/ChecklistsWrapper";
 import { Container } from "./components/Container";
 import { Dialog } from "./components/Dialog";
@@ -13,6 +12,8 @@ import { ToDoList } from "./components/ToDoList";
 import { TodoForm } from "./components/TodoForm";
 import TodoContext from "./components/TodoProvider/TodoContext";
 import { TodoGroup } from "./components/TodoGroup";
+import { use } from "react";
+import { EmptyState } from "./components/EmptyState";
 
 /* const todos = [
   {
@@ -58,20 +59,25 @@ const completed = [
  */
 
 function App() {
-  // Cria estado de controle de exibição do modal Dialog
-  const [showDialog, setShowDialog] = useState(false);
-
   // Importa o TodoContext
-  const { todos, addTodo } = use(TodoContext);
-
-  // Exibir ou ocultar modal Dialog
-  function toggleDialog() {
-    setShowDialog(!showDialog);
-  }
+  const {
+    todos,
+    addTodo,
+    editTodo,
+    showDialog,
+    openFormTodoDialog,
+    closeFormTodoDialog,
+    selectedTodo,
+  } = use(TodoContext);
 
   const handleFormSubmit = (formData) => {
-    addTodo(formData);
-    toggleDialog();
+    if (selectedTodo) {
+      editTodo(formData);
+    } else {
+      addTodo(formData);
+    }
+
+    closeFormTodoDialog();
   };
 
   return (
@@ -89,6 +95,9 @@ function App() {
             items={todos.filter((t) => !t.completed)}
           />
 
+          {/* Condição ternária, se todo for vazioo adiciona o componente EmptyState */}
+          {todos.length == 0 && <EmptyState />}
+
           <TodoGroup
             heading="Concluído"
             items={todos.filter((t) => t.completed)}
@@ -96,10 +105,13 @@ function App() {
 
           <Footer>
             {/* Dialog */}
-            <Dialog isOpen={showDialog} onClose={toggleDialog}>
-              <TodoForm onSubmit={handleFormSubmit} />
+            <Dialog isOpen={showDialog} onClose={closeFormTodoDialog}>
+              <TodoForm
+                onSubmit={handleFormSubmit}
+                defaultValue={selectedTodo?.description}
+              />
             </Dialog>
-            <FabButton onClick={toggleDialog}>
+            <FabButton onClick={() => openFormTodoDialog()}>
               <IconPlus />
             </FabButton>
           </Footer>
