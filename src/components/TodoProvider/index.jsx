@@ -10,6 +10,27 @@ export function TodoProvider({ children }) {
   // Cria estado com lista de todos inicial
   const [todos, setTodos] = useState(savedTodos ? JSON.parse(savedTodos) : []);
 
+  // Cria estado de controle de exibição do modal Dialog
+  const [showDialog, setShowDialog] = useState(false);
+
+  // Cria estado para carregar todo a ser editado
+  const [selectedTodo, setSelectedTodo] = useState();
+
+  // Função de abertura e edição de item
+  const openFormTodoDialog = (todo) => {
+    if (todo) {
+      setSelectedTodo(todo);
+    }
+
+    setShowDialog(true);
+  };
+
+  // Ocultar modal Dialog
+  const closeFormTodoDialog = () => {
+    setShowDialog(false);
+    setShowDialog(null);
+  };
+
   // UseEffect executa função sempre que o Array de Todos é alterado
   useEffect(() => {
     localStorage.setItem(TODOS, JSON.stringify(todos));
@@ -21,16 +42,18 @@ export function TodoProvider({ children }) {
 
     setTodos((prevState) => {
       const todo = {
-        id: prevState.length + 1,
+        id: selectedTodo ? selectedTodo.id : prevState.length + 1,
         description,
-        completed: false,
-        createdAt: new Date().toISOString(),
+        completed: selectedTodo ? selectedTodo.completed : false,
+        createdAt: selectedTodo ? selectedTodo.createdAt : Date().toISOString(),
       };
 
-      return [...prevState, todo];
+      return [...prevState.filter((item) => item.id != todo.id), todo].sort(
+        (a, b) => a.id - b.id,
+      );
     });
 
-    // toggleDialog();
+    closeFormTodoDialog();
   };
 
   // Funcao executa o toggle no item todo completed
@@ -59,7 +82,18 @@ export function TodoProvider({ children }) {
   };
 
   return (
-    <TodoContext value={{ todos, addTodo, toggleTodoCompleted, deleteTodo }}>
+    <TodoContext
+      value={{
+        todos,
+        addTodo,
+        deleteTodo,
+        toggleTodoCompleted,
+        showDialog,
+        openFormTodoDialog,
+        closeFormTodoDialog,
+        selectedTodo,
+      }}
+    >
       {children}
     </TodoContext>
   );
